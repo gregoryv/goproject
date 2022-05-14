@@ -63,10 +63,15 @@ func (me *Project) WriteTo(w io.Writer) (int64, error) {
 	p.Print("\033[2J\033[f") // clear
 	p.Println(fg.White, me.Root, vt.Reset)
 
+	if v := me.Special(); len(v) > 0 {
+		p.Println(fg.Yellow, strings.Join(v, "  "), vt.Reset)
+	}
+	p.Println()
+
 	for _, f := range me.Files {
 		p.Println(fg.White, f.Path, vt.Reset)
 		if types := f.Types(); len(types) > 0 {
-			p.Println(fg.Cyan, strings.Join(types, ", "), vt.Reset)
+			p.Println(fg.Cyan, "  ", strings.Join(types, ", "), vt.Reset)
 		}
 	}
 
@@ -77,9 +82,33 @@ func (me *Project) AddFile(f *File) {
 	switch f.Name() {
 	case "README.md":
 		me.Readme = f
+	case "changelog.txt", "Changelog.md", "CHANGELOG.md":
+		me.Changelog = f
+	case "go.mod":
+		me.GoMod = f
+	case "LICENSE", "license.txt":
+		me.License = f
+	case ".gitignore", ".onchange.sh", "go.sum":
 	default:
 		me.Files = append(me.Files, f)
 	}
+}
+
+func (me *Project) Special() []string {
+	special := []string{}
+	if me.Readme != nil {
+		special = append(special, me.Readme.Name())
+	}
+	if me.Changelog != nil {
+		special = append(special, me.Changelog.Name())
+	}
+	if me.License != nil {
+		special = append(special, me.License.Name())
+	}
+	if me.GoMod != nil {
+		special = append(special, me.GoMod.Name())
+	}
+	return special
 }
 
 type File struct {
