@@ -1,6 +1,8 @@
 package main
 
 import (
+	"go/scanner"
+	"go/token"
 	"io"
 	"io/fs"
 	"os"
@@ -62,7 +64,10 @@ func (me *Project) WriteTo(w io.Writer) (int64, error) {
 	p.Println(fg.White, me.Root, vt.Reset)
 
 	for _, f := range me.Files {
-		p.Println(fg.Red, f.Path, vt.Reset)
+		p.Println(fg.White, f.Path, vt.Reset)
+		if types := f.Types(); len(types) > 0 {
+			p.Println(fg.Cyan, strings.Join(types, ", "), vt.Reset)
+		}
 	}
 
 	return p.Written, *err
@@ -80,5 +85,33 @@ func (me *Project) AddFile(f *File) {
 type File struct {
 	Path string
 	fs.DirEntry
-	Types []string
+}
+
+func (me *File) Types() []string {
+	if filepath.Ext(me.Path) != ".go" {
+		return nil
+	}
+	src, err := os.ReadFile(me.Path)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	var s scanner.Scanner
+	fset := token.NewFileSet()
+	file := fset.AddFile(me.Path, fset.Base(), len(src))
+	s.Init(file, src, nil, scanner.ScanComments)
+
+	res := []string{}
+	for {
+		_, tok, lit := s.Scan()
+		if tok == token.EOF {
+			break
+		}
+
+		if tok == token.TYPE {
+			_, tok, lit = s.Scan()
+			res = append(res, lit)
+		}
+	}
+	return res
 }
