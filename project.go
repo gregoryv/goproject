@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-func New(root string) *Project {
+func LoadProject(root string) *Project {
 	project := Project{
 		Root: root,
 	}

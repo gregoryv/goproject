@@ -19,7 +19,7 @@ func main() {
 	)
 	cli.Parse()
 
-	project := goproject.New(root)
+	project := goproject.LoadProject(root)
 	showProject(os.Stdout, project)
 }
 
