@@ -1,4 +1,4 @@
-module github.com/gregoryv/goreplay
+module github.com/gregoryv/goproject
 
 go 1.18
 

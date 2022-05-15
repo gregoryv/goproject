@@ -1,4 +1,4 @@
-package main
+package goproject
 
 import (
 	"go/scanner"
@@ -12,12 +12,6 @@ import (
 	"github.com/gregoryv/nexus"
 	"github.com/gregoryv/vt100"
 )
-
-func main() {
-	root, _ := os.Getwd()
-	project := NewProject(root)
-	project.WriteTo(os.Stdout)
-}
 
 func NewProject(root string) *Project {
 	project := Project{
