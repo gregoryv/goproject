@@ -24,12 +24,12 @@ type Project struct {
 	Changelog *File
 	License   *File
 	GoMod     *File
-	Files     []*File
+	GoFiles   []*File
 }
 
 func (me *Project) Update() {
 	// reset
-	me.Files = nil
+	me.GoFiles = nil
 	me.Readme = nil
 	me.Changelog = nil
 	me.License = nil
@@ -66,8 +66,11 @@ func (me *Project) AddFile(f *File) {
 	case "LICENSE", "license.txt":
 		me.License = f
 	case ".gitignore", ".onchange.sh", "go.sum":
+
 	default:
-		me.Files = append(me.Files, f)
+		if filepath.Ext(f.Name()) == ".go" {
+			me.GoFiles = append(me.GoFiles, f)
+		}
 	}
 }
 

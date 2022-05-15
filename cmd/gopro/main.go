@@ -37,7 +37,7 @@ func showProject(w io.Writer, project *goproject.Project) (int64, error) {
 	}
 	p.Println()
 
-	for _, f := range project.Files {
+	for _, f := range project.GoFiles {
 		p.Println(fg.White, f.Path, vt.Reset)
 		if types := f.Types(); len(types) > 0 {
 			p.Println(fg.Cyan, "  ", strings.Join(types, ", "), vt.Reset)
