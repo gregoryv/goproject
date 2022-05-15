@@ -27,6 +27,7 @@ type Project struct {
 	License   *File
 	GoMod     *File
 	GoFiles   []*File
+	TestFiles []*File
 }
 
 func (me *Project) Update() {
@@ -74,7 +75,11 @@ func (me *Project) AddFile(f *File) {
 	case ".gitignore", ".onchange.sh", "go.sum":
 
 	default:
-		if filepath.Ext(f.Name()) == ".go" {
+		switch {
+		case strings.HasSuffix(f.Name(), "_test.go"):
+			me.TestFiles = append(me.TestFiles, f)
+
+		case filepath.Ext(f.Name()) == ".go":
 			me.GoFiles = append(me.GoFiles, f)
 		}
 	}
