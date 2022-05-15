@@ -19,7 +19,8 @@ func main() {
 	)
 	cli.Parse()
 
-	project := goproject.LoadProject(root)
+	os.Chdir(root)
+	project := goproject.LoadProject(".")
 	showProject(os.Stdout, project)
 }
 
