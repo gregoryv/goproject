@@ -46,10 +46,22 @@ func showProject(w io.Writer, project *goproject.Project) (int64, error) {
 			continue
 		}
 
-		p.Println(fg.White, f.Path, vt.Reset)
-		p.Println(fg.Cyan, "  ", strings.Join(types, ", "), vt.Reset)
+		p.Println(
+			fg.White, f.Path,
+			fg.Cyan, strings.Join(types, ", "), vt.Reset,
+		)
 	}
 	p.Println()
 	p.Println(vt.Dim, strings.Join(noTypes, ", "), "(without types)", vt.Reset)
 	return p.Written, *err
+}
+
+func longest(files []*goproject.File) int {
+	var l int
+	for _, f := range files {
+		if got := len(f.Name()); got > l {
+			l = got
+		}
+	}
+	return l
 }
