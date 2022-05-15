@@ -29,8 +29,8 @@ func showProject(w io.Writer, project *goproject.Project) (int64, error) {
 	vt := vt100.Attributes()
 
 	p, err := nexus.NewPrinter(w)
-	p.Print("\033[2J\033[f") // clear
-	p.Println(fg.White, project.Root, vt.Reset)
+	//p.Print("\033[2J\033[f") // clear
+	p.Println(fg.White, project.Package, vt.Reset)
 
 	if v := project.Special(); len(v) > 0 {
 		p.Println(fg.Yellow, strings.Join(v, "  "), vt.Reset)

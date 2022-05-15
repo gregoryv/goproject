@@ -1,21 +1,26 @@
 package goproject
 
 import (
+	"bytes"
 	"io/fs"
+	"os/exec"
 	"path/filepath"
 	"strings"
 )
 
 func LoadProject(root string) *Project {
+	out, _ := exec.Command("go", "list", root).Output()
 	project := Project{
-		Root: root,
+		Root:    root,
+		Package: string(bytes.TrimSpace(out)),
 	}
 	project.Update()
 	return &project
 }
 
 type Project struct {
-	Root string
+	Root    string
+	Package string
 
 	Readme    *File
 	Changelog *File
@@ -25,14 +30,16 @@ type Project struct {
 }
 
 func (me *Project) Update() {
-	// reset
+	me.Reset()
+	filepath.WalkDir(me.Root, me.load)
+}
+
+func (me *Project) Reset() {
 	me.GoFiles = nil
 	me.Readme = nil
 	me.Changelog = nil
 	me.License = nil
 	me.GoMod = nil
-
-	filepath.WalkDir(me.Root, me.load)
 }
 
 func (me *Project) load(path string, d fs.DirEntry, err error) error {
@@ -58,7 +65,7 @@ func (me *Project) AddFile(f *File) {
 	switch f.Name() {
 	case "README.md":
 		me.Readme = f
-	case "changelog.txt", "Changelog.md", "CHANGELOG.md":
+	case "changelog.txt", "Changelog.md", "CHANGELOG.md", "CHANGELOG":
 		me.Changelog = f
 	case "go.mod":
 		me.GoMod = f
