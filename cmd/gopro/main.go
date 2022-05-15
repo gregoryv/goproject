@@ -38,12 +38,18 @@ func showProject(w io.Writer, project *goproject.Project) (int64, error) {
 	}
 	p.Println()
 
+	var noTypes []string
 	for _, f := range project.GoFiles {
-		p.Println(fg.White, f.Path, vt.Reset)
-		if types := f.ParseTypes(); len(types) > 0 {
-			p.Println(fg.Cyan, "  ", strings.Join(types, ", "), vt.Reset)
+		types := f.ParseTypes()
+		if len(types) == 0 {
+			noTypes = append(noTypes, f.Name())
+			continue
 		}
-	}
 
+		p.Println(fg.White, f.Path, vt.Reset)
+		p.Println(fg.Cyan, "  ", strings.Join(types, ", "), vt.Reset)
+	}
+	p.Println()
+	p.Println(vt.Dim, strings.Join(noTypes, ", "), "(without types)", vt.Reset)
 	return p.Written, *err
 }
