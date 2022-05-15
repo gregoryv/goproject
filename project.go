@@ -3,17 +3,13 @@ package goproject
 import (
 	"go/scanner"
 	"go/token"
-	"io"
 	"io/fs"
 	"os"
 	"path/filepath"
 	"strings"
-
-	"github.com/gregoryv/nexus"
-	"github.com/gregoryv/vt100"
 )
 
-func NewProject(root string) *Project {
+func New(root string) *Project {
 	project := Project{
 		Root: root,
 	}
@@ -57,30 +53,6 @@ func (me *Project) Update() {
 		me.AddFile(f)
 		return nil
 	})
-}
-
-func (me *Project) WriteTo(w io.Writer) (int64, error) {
-	fg := vt100.ForegroundColors()
-	_ = vt100.BackgroundColors()
-	vt := vt100.Attributes()
-
-	p, err := nexus.NewPrinter(w)
-	p.Print("\033[2J\033[f") // clear
-	p.Println(fg.White, me.Root, vt.Reset)
-
-	if v := me.Special(); len(v) > 0 {
-		p.Println(fg.Yellow, strings.Join(v, "  "), vt.Reset)
-	}
-	p.Println()
-
-	for _, f := range me.Files {
-		p.Println(fg.White, f.Path, vt.Reset)
-		if types := f.Types(); len(types) > 0 {
-			p.Println(fg.Cyan, "  ", strings.Join(types, ", "), vt.Reset)
-		}
-	}
-
-	return p.Written, *err
 }
 
 func (me *Project) AddFile(f *File) {

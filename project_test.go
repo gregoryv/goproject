@@ -7,5 +7,5 @@ import (
 
 func TestProject(t *testing.T) {
 	wd, _ := os.Getwd()
-	_ = NewProject(wd)
+	_ = New(wd)
 }
