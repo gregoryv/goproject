@@ -5,13 +5,20 @@ import (
 	"os"
 	"strings"
 
+	"github.com/gregoryv/cmdline"
 	"github.com/gregoryv/goproject"
 	"github.com/gregoryv/nexus"
 	"github.com/gregoryv/vt100"
 )
 
 func main() {
-	root, _ := os.Getwd()
+	var (
+		wd, _ = os.Getwd()
+		cli   = cmdline.NewBasicParser()
+		root  = cli.NamedArg("DIR").String(wd)
+	)
+	cli.Parse()
+
 	project := goproject.New(root)
 	showProject(os.Stdout, project)
 }
