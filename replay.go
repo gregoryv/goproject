@@ -23,7 +23,29 @@ func NewProject(root string) *Project {
 	project := Project{
 		Root: root,
 	}
-	filepath.WalkDir(root, func(path string, d fs.DirEntry, err error) error {
+	project.Update()
+	return &project
+}
+
+type Project struct {
+	Root string
+
+	Readme    *File
+	Changelog *File
+	License   *File
+	GoMod     *File
+	Files     []*File
+}
+
+func (me *Project) Update() {
+	// reset
+	me.Files = nil
+	me.Readme = nil
+	me.Changelog = nil
+	me.License = nil
+	me.GoMod = nil
+
+	filepath.WalkDir(me.Root, func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
 			return err
 		}
@@ -35,23 +57,12 @@ func NewProject(root string) *Project {
 		}
 
 		f := &File{
-			Path:     strings.TrimPrefix(path, root+"/"),
+			Path:     strings.TrimPrefix(path, me.Root+"/"),
 			DirEntry: d,
 		}
-		project.AddFile(f)
+		me.AddFile(f)
 		return nil
 	})
-	return &project
-}
-
-type Project struct {
-	Root  string
-	Files []*File
-
-	Readme    *File
-	Changelog *File
-	License   *File
-	GoMod     *File
 }
 
 func (me *Project) WriteTo(w io.Writer) (int64, error) {
