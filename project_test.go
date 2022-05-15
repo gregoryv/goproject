@@ -21,4 +21,11 @@ func TestLoadProject(t *testing.T) {
 			t.Error("expected an error")
 		}
 	})
+
+	t.Run("Special", func(t *testing.T) {
+		if got := project.Special(); len(got) < 4 {
+			t.Error(got)
+		}
+	})
+
 }
