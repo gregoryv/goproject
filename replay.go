@@ -136,11 +136,14 @@ func (me *File) Types() []string {
 		if tok == token.EOF {
 			break
 		}
-
-		if tok == token.TYPE {
-			_, tok, lit = s.Scan()
-			res = append(res, lit)
+		if tok != token.TYPE {
+			continue
 		}
+		_, _, lit = s.Scan()
+		if lit == "" {
+			continue
+		}
+		res = append(res, lit)
 	}
 	return res
 }
