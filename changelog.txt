@@ -4,4 +4,5 @@ All major changes will be documented in this file.
 
 ## [unreleased]
 
-- Show current state of project
+- Show defined types in each file
+- Hide test files by default
