@@ -5,7 +5,6 @@ import (
 	"go/token"
 	"io/fs"
 	"os"
-	"path/filepath"
 )
 
 type File struct {
@@ -13,21 +12,15 @@ type File struct {
 	fs.DirEntry
 }
 
-func (me *File) Types() []string {
-	if filepath.Ext(me.Path) != ".go" {
-		return nil
-	}
-	src, err := os.ReadFile(me.Path)
-	if err != nil {
-		panic(err.Error())
-	}
+func (me *File) ParseTypes() Types {
+	src, _ := os.ReadFile(me.Path)
 
 	var s scanner.Scanner
 	fset := token.NewFileSet()
 	file := fset.AddFile(me.Path, fset.Base(), len(src))
 	s.Init(file, src, nil, scanner.ScanComments)
 
-	res := []string{}
+	var res Types
 	for {
 		_, tok, lit := s.Scan()
 		if tok == token.EOF {
@@ -37,10 +30,16 @@ func (me *File) Types() []string {
 			continue
 		}
 		_, _, lit = s.Scan()
-		if lit == "" {
-			continue
-		}
-		res = append(res, lit)
+		res.Add(lit)
 	}
 	return res
+}
+
+type Types []string
+
+func (me *Types) Add(v string) {
+	if v == "" {
+		return
+	}
+	*me = append(*me, v)
 }
