@@ -32,24 +32,26 @@ func (me *Project) Update() {
 	me.License = nil
 	me.GoMod = nil
 
-	filepath.WalkDir(me.Root, func(path string, d fs.DirEntry, err error) error {
-		if err != nil {
-			return err
-		}
-		if d.IsDir() && d.Name() == ".git" {
-			return filepath.SkipDir
-		}
-		if d.IsDir() {
-			return nil
-		}
+	filepath.WalkDir(me.Root, me.load)
+}
 
-		f := &File{
-			Path:     strings.TrimPrefix(path, me.Root+"/"),
-			DirEntry: d,
-		}
-		me.AddFile(f)
+func (me *Project) load(path string, d fs.DirEntry, err error) error {
+	if err != nil {
+		return err
+	}
+	if d.IsDir() && d.Name() == ".git" {
+		return filepath.SkipDir
+	}
+	if d.IsDir() {
 		return nil
-	})
+	}
+
+	f := &File{
+		Path:     strings.TrimPrefix(path, me.Root+"/"),
+		DirEntry: d,
+	}
+	me.AddFile(f)
+	return nil
 }
 
 func (me *Project) AddFile(f *File) {
