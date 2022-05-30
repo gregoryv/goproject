@@ -1,5 +1,8 @@
 goproject - show outline of go projects
 
+This tool helps you with getting a sense of *Where* types are declared
+and *What* makes up a specific project.
+
 ## Quick start
 
     $ go install github.com/gregoryv/goproject/cmd/goproject@latest
