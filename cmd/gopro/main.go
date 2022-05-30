@@ -27,17 +27,14 @@ func main() {
 
 func showProject(w io.Writer, project *goproject.Project) (int64, error) {
 	fg := vt100.ForegroundColors()
-	_ = vt100.BackgroundColors()
 	vt := vt100.Attributes()
 
 	p, err := nexus.NewPrinter(w)
-	//p.Print("\033[2J\033[f") // clear
 	p.Print(vt.Bright, project.Package, vt.Reset, "\n")
 
 	if v := project.Special(); len(v) > 0 {
 		p.Print(fg.Yellow, strings.Join(v, "  "), vt.Reset, "\n")
 	}
-	p.Println()
 
 	var noTypes []string
 	for _, f := range project.GoFiles {
@@ -46,15 +43,15 @@ func showProject(w io.Writer, project *goproject.Project) (int64, error) {
 			noTypes = append(noTypes, f.Name())
 			continue
 		}
-
+		vars := f.ParseVars()
 		p.Print(
 			fg.White, f.Path, " ",
 			fg.Cyan, strings.Join(public(types), ", "), " ",
-			vt.Dim, strings.Join(private(types), ", "), vt.Reset,
+			vt.Dim, strings.Join(private(types), ", "), " ",
+			fg.Magenta, strings.Join(public(vars), ", "), vt.Reset,
 			"\n",
 		)
 	}
-	p.Println()
 	p.Print(vt.Dim, strings.Join(noTypes, ", "), "(without types)", vt.Reset, "\n")
 	return p.Written, *err
 }

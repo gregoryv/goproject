@@ -1,22 +1,27 @@
 package goproject
 
 import (
-	"io/fs"
-	"path/filepath"
 	"testing"
 )
 
-func TestFile_Types(t *testing.T) {
-	filepath.WalkDir(".", func(path string, d fs.DirEntry, err error) error {
-		f := &File{
-			Path:     path,
-			DirEntry: d,
-		}
-		if d.Name() == "project.go" && len(f.ParseTypes()) == 0 {
-			t.Error("missing types in project.go")
-		}
-		return nil
-	})
+func TestParseTypes(t *testing.T) {
+	f := &File{
+		Path: "project.go",
+	}
+	if len(f.ParseTypes()) == 0 {
+		t.Error("missing types in project.go")
+	}
+}
+
+func TestParseVars(t *testing.T) {
+	f := &File{
+		Path: "file_test.go",
+	}
+	var X int // should be picked up
+	_ = X
+	if len(f.ParseVars()) == 0 {
+		t.Error("no vars found in file_test.go")
+	}
 }
 
 func TestTypes_Add(t *testing.T) {
