@@ -4,6 +4,7 @@ import (
 	"io"
 	"os"
 	"strings"
+	"unicode"
 
 	"github.com/gregoryv/cmdline"
 	"github.com/gregoryv/goproject"
@@ -31,10 +32,10 @@ func showProject(w io.Writer, project *goproject.Project) (int64, error) {
 
 	p, err := nexus.NewPrinter(w)
 	//p.Print("\033[2J\033[f") // clear
-	p.Print(vt.Bright, fg.White, project.Package, vt.Reset, "\n")
+	p.Print(vt.Bright, project.Package, vt.Reset, "\n")
 
 	if v := project.Special(); len(v) > 0 {
-		p.Println(fg.Yellow, strings.Join(v, "  "), vt.Reset)
+		p.Print(fg.Yellow, strings.Join(v, "  "), vt.Reset, "\n")
 	}
 	p.Println()
 
@@ -46,14 +47,48 @@ func showProject(w io.Writer, project *goproject.Project) (int64, error) {
 			continue
 		}
 
-		p.Println(
-			fg.White, f.Path,
-			fg.Cyan, strings.Join(types, ", "), vt.Reset,
+		p.Print(
+			fg.White, f.Path, " ",
+			fg.Cyan, strings.Join(public(types), ", "), " ",
+			vt.Dim, strings.Join(private(types), ", "), vt.Reset,
+			"\n",
 		)
 	}
 	p.Println()
-	p.Println(vt.Dim, strings.Join(noTypes, ", "), "(without types)", vt.Reset)
+	p.Print(vt.Dim, strings.Join(noTypes, ", "), "(without types)", vt.Reset, "\n")
 	return p.Written, *err
+}
+
+// public returns a slice of all words starting with uppercase letter
+func public(v []string) []string {
+	res := make([]string, 0)
+	for _, name := range v {
+		for i, r := range name {
+			if i > 0 {
+				break
+			}
+			if unicode.IsUpper(r) {
+				res = append(res, name)
+			}
+		}
+	}
+	return res
+}
+
+// public returns a slice of all words starting with lowercase letter
+func private(v []string) []string {
+	res := make([]string, 0)
+	for _, name := range v {
+		for i, r := range name {
+			if i > 0 {
+				break
+			}
+			if unicode.IsLower(r) {
+				res = append(res, name)
+			}
+		}
+	}
+	return res
 }
 
 func longest(files []*goproject.File) int {
