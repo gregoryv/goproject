@@ -33,7 +33,7 @@ func showProject(w io.Writer, project *goproject.Project) (int64, error) {
 	p.Print(vt.Bright, project.Package, vt.Reset, "\n")
 
 	if v := project.Special(); len(v) > 0 {
-		p.Print(fg.Yellow, strings.Join(v, "  "), vt.Reset, "\n")
+		p.Print(fg.Cyan, "", vt.Dim, strings.Join(v, "  "), vt.Reset, "\n")
 	}
 
 	var noTypes []string
@@ -45,14 +45,14 @@ func showProject(w io.Writer, project *goproject.Project) (int64, error) {
 		}
 		vars := f.ParseVars()
 		p.Print(
-			fg.White, f.Path, " ",
-			fg.Cyan, strings.Join(public(types), ", "), " ",
-			vt.Dim, strings.Join(private(types), ", "), " ",
+			vt.Dim, "", fg.Cyan, f.Path, " ",
+			vt.Reset, strings.Join(public(types), ", "), " ",
+			vt.Dim, fg.Yellow, strings.Join(private(types), ", "), " ",
 			fg.Magenta, strings.Join(public(vars), ", "), vt.Reset,
 			"\n",
 		)
 	}
-	p.Print(vt.Dim, strings.Join(noTypes, ", "), "(without types)", vt.Reset, "\n")
+	p.Print(vt.Dim, "", strings.Join(noTypes, ", "), " (without types)", vt.Reset, "\n")
 	return p.Written, *err
 }
 
