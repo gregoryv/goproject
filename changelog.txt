@@ -2,14 +2,16 @@
 
 All major changes will be documented in this file.
 
-## [unreleased]
+## [0.2.0] 2023-12-16
 
+- Root is now the command, ie.
+  go install github.com/gregoryv/goproject@latest
 - Changing colors to match my git log colors
   Package bright
   Files are dim;cyan
   Types normal
 
-## [0.1.0] - 2022-05-30
+## [0.1.0] 2022-05-30
 
 - Show defined types in each file
 - Hide test files by default

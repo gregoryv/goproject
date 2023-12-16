@@ -1,4 +1,4 @@
-package goproject
+package main
 
 import (
 	"errors"

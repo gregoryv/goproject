@@ -7,7 +7,6 @@ import (
 	"unicode"
 
 	"github.com/gregoryv/cmdline"
-	"github.com/gregoryv/goproject"
 	"github.com/gregoryv/nexus"
 	"github.com/gregoryv/vt100"
 )
@@ -21,11 +20,11 @@ func main() {
 	cli.Parse()
 
 	os.Chdir(root)
-	project := goproject.LoadProject(".")
+	project := LoadProject(".")
 	showProject(os.Stdout, project)
 }
 
-func showProject(w io.Writer, project *goproject.Project) (int64, error) {
+func showProject(w io.Writer, project *Project) (int64, error) {
 	fg := vt100.ForegroundColors()
 	vt := vt100.Attributes()
 
@@ -88,7 +87,7 @@ func private(v []string) []string {
 	return res
 }
 
-func longest(files []*goproject.File) int {
+func longest(files []*File) int {
 	var l int
 	for _, f := range files {
 		if got := len(f.Name()); got > l {
