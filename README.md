@@ -1,3 +1,5 @@
+ARCHIVED! Moved to https://sogvin.com/goproject
+
 main - show outline of go projects
 
 This tool helps you with getting a sense of *Where* types are declared
